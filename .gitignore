@@ -1,0 +1,4 @@
+hardware-configuration.nix # Opcional: oculte se preferir não expor IDs de hardware específicos
+*.swp
+*~
+.git
