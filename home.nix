@@ -164,6 +164,7 @@
   home.file."Imagens".source = config.lib.file.mkOutOfStoreSymlink "/mnt/vault/Gabriel/Imagens";
   home.file."Vídeos".source = config.lib.file.mkOutOfStoreSymlink "/mnt/vault/Gabriel/Vídeos";
   home.file."Música".source = config.lib.file.mkOutOfStoreSymlink "/mnt/vault/Gabriel/Música";
+  home.file."Estudos".source = config.lib.file.mkOutOfStoreSymlink "/mnt/vault/Gabriel/Estudos";
 
-  home.sessionVariables = { };
+    home.sessionVariables = { };
 }
