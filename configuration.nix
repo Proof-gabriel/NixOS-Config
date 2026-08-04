@@ -1,31 +1,33 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 {
   # ===========================================================================
-  # 0.scrip
-  # ==========================================================================
+  # 0. GC / LIMPEZA DO NIX
+  # ===========================================================================
   nix.gc = {
-  automatic = true;
-  dates = "weekly";
-  options = "--delete-older-than 14d";
-};
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 14d";
+  };
 
-  
   # ===========================================================================
   # 1. IMPORTS
   # ===========================================================================
   imports = [
     ./hardware-configuration.nix
+    inputs.noctalia.nixosModules.default
   ];
 
   # ===========================================================================
-  # 2. RECURSOS DO NIX E FLAKES
+  # 2. RECURSOS DO NIX, FLAKES E CACHIX DO NOCTALIA
   # ===========================================================================
-  # Garante que o suporte a Flakes funcione nativamente em todo o sistema
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+    extra-substituters = [ "https://noctalia.cachix.org" ];
+    extra-trusted-public-keys = [ "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4=" ];
+  };
   
-  # Permite a instalação de pacotes proprietários (não-livres)
-  # nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnfree = true;
 
   # ===========================================================================
   # 3. BOOT E KERNEL
@@ -48,7 +50,6 @@
   };
   services.blueman.enable = true;
 
-  # Servidor de Áudio (Essencial para Wayland, Niri e Fones Bluetooth)
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -61,7 +62,6 @@
   # 6. LOCALIZAÇÃO E IDIOMA
   # ===========================================================================
   time.timeZone = "America/Sao_Paulo";
-
   i18n.defaultLocale = "pt_BR.UTF-8";
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "pt_BR.UTF-8";
@@ -88,44 +88,39 @@
   programs.fish = {
     enable = true;
     shellAbbrs = {
-      # Atalhos do Eza (substituindo o ls)
       ls = "eza --icons=always --group-directories-first";
       ll = "eza -alF --icons=always --group-directories-first";
       la = "eza -a --icons=always --group-directories-first";
       lt = "eza --tree --level=2 --icons=always";
-      
-      # Outros utilitários
       cat = "bat";
       c = "clear";
-      
-      # Atalho direto para rebuild da máquina
       update = "sudo nixos-rebuild switch --flake /etc/nixos#nixos-btw"; 
     };
   };
 
   # ===========================================================================
-  # 8. INTERFACE GRÁFICA (Niri + DankMaterialShell)
+  # 8. INTERFACE GRÁfICA (Niri + Noctalia Shell Stack)
   # ===========================================================================
   programs.niri.enable = true;
+  services.displayManager.ly.enable = true;
 
-  programs.dms-shell = {
+  # Noctalia Shell configurado com serviços recomendados e systemd ativado
+  programs.noctalia = {
     enable = true;
-    systemd = {
-      enable = true;
-      restartIfChanged = true;
-    };
-    enableSystemMonitoring = true;
-    enableDynamicTheming = true;
-    enableAudioWavelength = true;
+    recommendedServices.enable = true;
+    systemd.enable = true; 
   };
 
-  services.displayManager.dms-greeter = {
-    enable = true;
-    compositor.name = "niri";
-  };
-
-  # Suporte a configurações GTK/Dconf no Wayland
   programs.dconf.enable = true;
+  xdg.portal = {
+    enable = true;
+    extraPortals = [
+      pkgs.xdg-desktop-portal-gnome
+      pkgs.xdg-desktop-portal-gtk
+    ];
+  };
+
+  security.polkit.enable = true;
 
   # ===========================================================================
   # 9. QT, IMPRESSÃO E VARIÁVEIS DE SESSÃO
@@ -141,18 +136,20 @@
   environment.sessionVariables = {
     XCURSOR_THEME = "WhiteSur-cursors";
     XCURSOR_SIZE = "24";
-    NIXOS_OZONE_WL = "1"; # Força apps Electron (Brave, VS Code, etc) a rodarem nativos em Wayland
+    NIXOS_OZONE_WL = "1";
   };
 
   # ===========================================================================
   # 10. PACOTES GLOBAIS DO SISTEMA
   # ===========================================================================
   environment.systemPackages = with pkgs; [
-    # Navegador, Terminal e editor
     brave
     ghostty
-       
-    # Ferramentas do Terminal (CLI)
+    spotify-spotx  
+    wlogout
+    mpvpaper
+    bc
+
     git
     curl
     wget
@@ -164,17 +161,15 @@
     zoxide
     p7zip
     fastfetchMinimal
-    # Visualização de Mídia e Arquivos
+
     yazi
     imv
 
-    # Dependências do Yazi (Capas/Miniaturas)
     ffmpegthumbnailer
     imagemagick
     poppler-utils
     gnome-epub-thumbnailer
 
-    # Aparência e Sistema
     cups-pk-helper
     starship
     whitesur-icon-theme
@@ -182,7 +177,24 @@
   ];
 
   # ===========================================================================
-  # 11. VERSÃO DO NIXOS
+  # 11. FONTES
+  # ===========================================================================
+  fonts.packages = with pkgs; [
+    font-awesome
+    nerd-fonts.symbols-only
+    
+    (stdenvNoCC.mkDerivation {
+      name = "waycat-font";
+      src = ./fonts;
+      installPhase = ''
+        mkdir -p $out/share/fonts/truetype
+        cp *.ttf $out/share/fonts/truetype/
+      '';
+    })
+  ];
+
+  # ===========================================================================
+  # 12. VERSÃO DO NIXOS
   # ===========================================================================
   system.stateVersion = "26.05";
 }

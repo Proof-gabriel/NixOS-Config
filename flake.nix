@@ -10,10 +10,21 @@
     home-manager = { 
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
-    };   
+    };
+
+    # Patch do SpotX para o Spotify sem anúncios
+    spotx-nix = {
+      url = "github:SpotX-Official/SpotX-Nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Noctalia-shell (branch cachix para binários pré-compilados)
+    noctalia = {
+      url = "github:noctalia-dev/noctalia/cachix";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... } @ inputs: 
+  outputs = { self, nixpkgs, home-manager, spotx-nix, noctalia, ... } @ inputs: 
   let
     # =======================================================================
     # 2. VARIÁVEIS GLOBAIS DA MÁQUINA
@@ -29,10 +40,15 @@
     nixosConfigurations.${hostName} = nixpkgs.lib.nixosSystem {
       inherit system;
 
-      # Passa todos os "inputs" para os módulos (muito útil para projetos futuros)
+      # Passa todos os "inputs" para os módulos
       specialArgs = { inherit inputs; };
 
       modules = [
+        # --- Overlays Globais (Ex: SpotX para Spotify) ---
+        {
+          nixpkgs.overlays = [ spotx-nix.overlays.default ];
+        }
+
         # --- Configuração Base do Sistema ---
         ./configuration.nix
         

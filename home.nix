@@ -9,18 +9,32 @@
   home.stateVersion = "26.05"; 
 
   # ===========================================================================
-  # 2. PACOTES GLOBAIS DO USUÁRIO
+  # 2. PACOTES DO USUÁRIO
   # ===========================================================================
   home.packages = with pkgs; [
+    brave
+    ghostty
+    zed-editor
+    zathura
+    proton-vpn
+
+    wl-clipboard     
+    grim             
+    slurp            
+
     texlive.combined.scheme-full 
     texlab
-    zathura
-    zed-editor
-    nixd            
+    nixd      
     nixfmt
 
-    protonvpn-gui
-    proton-vpn-cli                
+    imv
+    ffmpegthumbnailer
+    imagemagick
+    poppler-utils
+    gnome-epub-thumbnailer
+
+    whitesur-icon-theme
+    whitesur-cursors
   ];
 
   # ===========================================================================
@@ -28,7 +42,6 @@
   # ===========================================================================
   programs = {
     
-    # --- Shell Principal (Fish) ---
     fish = {
       enable = true;
       
@@ -54,7 +67,6 @@
       };
     };
 
-    # --- Starship (Tema Tokyo Night Convertido para Nix) ---
     starship = {
       enable = true;
       enableBashIntegration = true;
@@ -62,7 +74,6 @@
       enableFishIntegration = true;
     };
 
-    # --- Yazi (Gerenciador de Arquivos) ---
     yazi = {
       enable = true;
       enableFishIntegration = true;
@@ -75,27 +86,22 @@
       };
     };
 
-    # --- Automação de Ambientes Virtuais ---
     direnv = {
       enable = true;
       nix-direnv.enable = true;
     };
 
-    # --- Editor de Texto ---
     helix = {
       enable = true;
       defaultEditor = true;
     };
 
-    # --- Controle de Versão (Git) ---
     git = {
       enable = true;
       
-      # Identificação Básica
       userName = "Proof-gabriel";
       userEmail = "Proof_gabriel@proton.me";
 
-      # Atalhos e Comportamentos Extras
       aliases = {
         st = "status";
         co = "checkout";
@@ -110,19 +116,18 @@
       };
     };
 
-    # --- Reprodutor de Mídia ---
     mpv = {
       enable = true;
       config = {
         keep-open = "yes";
       };
     };
-    
-  }; # <-- Fim do bloco principal "programs"
+  };
 
   # ===========================================================================
   # 4. ARQUIVOS DE CONFIGURAÇÃO (XDG / PLUGINS)
   # ===========================================================================
+  xdg.configFile."niri/config.kdl".source = ./modules/niri.kdl;
   xdg.configFile."starship.toml".source = ./starship.toml;
 
   xdg.configFile."yazi/plugins/epub.yazi/main.lua".text = ''
@@ -166,5 +171,12 @@
   home.file."Música".source = config.lib.file.mkOutOfStoreSymlink "/mnt/vault/Gabriel/Música";
   home.file."Estudos".source = config.lib.file.mkOutOfStoreSymlink "/mnt/vault/Gabriel/Estudos";
 
-    home.sessionVariables = { };
+  # ===========================================================================
+  # 6. VARIÁVEIS DE SESSÃO DO USUÁRIO
+  # ===========================================================================
+  home.sessionVariables = {
+    XCURSOR_THEME = "WhiteSur-cursors";
+    XCURSOR_SIZE = "24";
+    NIXOS_OZONE_WL = "1";
+  };
 }

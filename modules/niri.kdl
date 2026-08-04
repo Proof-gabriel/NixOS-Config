@@ -1,0 +1,98 @@
+// =====================================================================
+// CONFIGURAÇÃO OTIMIZADA DO NIRI (NIXOS)
+// =====================================================================
+
+screenshot-path "~/Imagens/print_%Y-%m-%d_%H-%M-%S.png"
+prefer-no-csd
+
+input {
+    keyboard {
+        xkb {
+            layout "br"
+        }
+    }
+}
+
+layout {
+    gaps 8
+    center-focused-column "never"
+
+    focus-ring {
+        width 2
+        active-color "#d0d0d0"
+        inactive-color "#2a2a2a"
+    }
+}
+
+environment {
+    QT_QPA_PLATFORM "wayland"
+    MOZ_ENABLE_WAYLAND "1"
+    SDL_VIDEODRIVER "wayland"
+    _JAVA_AWT_WM_NONREPARENTING "1"
+}
+
+// Inicialização de serviços essenciais
+spawn-at-startup "noctalia"
+spawn-at-startup "mpvpaper" "-o" "no-audio loop" "*" "/etc/nixos/wallpapers/SEU_VIDEO.mp4"
+spawn-at-startup "mako"
+spawn-at-startup "sh" "-c" "gsettings set org.gnome.desktop.interface cursor-theme 'WhiteSur-cursors' && gsettings set org.gnome.desktop.interface cursor-size 24"
+
+window-rule {
+    geometry-corner-radius 10
+    clip-to-geometry true
+}
+
+window-rule {
+    match app-id="com.mitchellh.ghostty"
+    match app-id="ghostty"
+    draw-border-with-background false
+    background-effect {
+        blur true
+    }
+}
+
+window-rule {
+    match title="Picture in picture"
+    open-floating true
+    default-column-width { fixed 640; }
+    default-window-height { fixed 360; }
+    default-floating-position x=10 y=10 relative-to="bottom-right"
+}
+
+binds {
+    Mod+Return { spawn "ghostty"; }
+    Mod+B      { spawn "brave"; }
+    Mod+Space  { spawn "noctalia" "--toggle-launcher"; }
+    Mod+D      { spawn "noctalia" "--toggle-launcher"; }
+
+    Print         { screenshot-screen; }
+    Super+Print   { screenshot-window; }
+    Shift+Print   { screenshot; }
+
+    Mod+Q         { close-window; }
+    Mod+Shift+E   { quit; }
+    Mod+F         { maximize-column; }
+
+    Mod+Left      { focus-column-left; }
+    Mod+Right     { focus-column-right; }
+    Mod+Up        { focus-window-up; }
+    Mod+Down      { focus-window-down; }
+
+    Mod+Shift+Left  { move-column-left; }
+    Mod+Shift+Right { move-column-right; }
+    Mod+Shift+Up    { move-window-up; }
+    Mod+Shift+Down  { move-window-down; }
+
+    Mod+Ctrl+Left   { consume-or-expel-window-left; }
+    Mod+Ctrl+Right  { consume-or-expel-window-right; }
+
+    Mod+Page_Down { focus-workspace-down; }
+    Mod+Page_Up   { focus-workspace-up; }
+    Mod+U         { focus-workspace-down; }
+    Mod+I         { focus-workspace-up; }
+
+    Mod+Shift+Page_Down { move-window-to-workspace-down; }
+    Mod+Shift+Page_Up   { move-window-to-workspace-up; }
+    Mod+Shift+U         { move-window-to-workspace-down; }
+    Mod+Shift+I         { move-window-to-workspace-up; }
+}
