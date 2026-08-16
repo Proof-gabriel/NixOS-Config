@@ -22,6 +22,12 @@
     noctalia = {
       url = "github:noctalia-dev/noctalia/cachix";
     };
+
+    # INJEÇÃO DO SLSSTEAM AQUI:
+    sls-steam = {
+      url = "github:AceSLS/SLSsteam";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, home-manager, spotx-nix, noctalia, ... } @ inputs: 

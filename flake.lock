@@ -74,7 +74,28 @@
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs",
         "noctalia": "noctalia",
+        "sls-steam": "sls-steam",
         "spotx-nix": "spotx-nix"
+      }
+    },
+    "sls-steam": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1785830347,
+        "narHash": "sha256-LA56VXRcymN7w9lcDIkgnVTYf1nmb8scPGfTQ6tlHpU=",
+        "owner": "AceSLS",
+        "repo": "SLSsteam",
+        "rev": "a1b30e8183651a6d3a016365b18d8893964af7cc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "AceSLS",
+        "repo": "SLSsteam",
+        "type": "github"
       }
     },
     "spotx-bash": {

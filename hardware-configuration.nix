@@ -23,6 +23,12 @@
     fsType = "ext4";
   };
 
+  fileSystems."/mnt/steam" = {
+    device = "/dev/disk/by-label/steam-library";
+    fsType = "ext4";
+    options = [ "defaults" "noatime" ];
+  };
+
   swapDevices =
     [ { device = "/dev/disk/by-uuid/6f995d8b-73b6-4ee4-b35c-7443f8d0db14"; }
     ];

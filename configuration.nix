@@ -34,6 +34,7 @@
   # ===========================================================================
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.supportedFilesystems = [ "ntfs" "exfat" "vfat" ];
 
   # ===========================================================================
   # 4. REDE E HOSTNAME
@@ -99,7 +100,7 @@
   };
 
   # ===========================================================================
-  # 8. INTERFACE GRÁfICA (Niri + Noctalia Shell Stack)
+  # 8. INTERFACE GRÁFICA (Niri + Noctalia Shell Stack)
   # ===========================================================================
   programs.niri.enable = true;
   services.displayManager.ly.enable = true;
@@ -146,10 +147,9 @@
     brave
     ghostty
     spotify-spotx  
-    wlogout
-    mpvpaper
-    bc
 
+    xwayland-satellite
+    
     git
     curl
     wget
@@ -161,7 +161,12 @@
     zoxide
     p7zip
     fastfetchMinimal
+    bitwarden-cli
+    prismlauncher
 
+    nautilus
+    polkit_gnome
+    
     yazi
     imv
 
@@ -182,19 +187,32 @@
   fonts.packages = with pkgs; [
     font-awesome
     nerd-fonts.symbols-only
-    
-    (stdenvNoCC.mkDerivation {
-      name = "waycat-font";
-      src = ./fonts;
-      installPhase = ''
-        mkdir -p $out/share/fonts/truetype
-        cp *.ttf $out/share/fonts/truetype/
-      '';
-    })
-  ];
+   ];
 
   # ===========================================================================
-  # 12. VERSÃO DO NIXOS
+  # 12. JOGOS / STEAM
+  # ===========================================================================
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = true;
+    localNetworkGameTransfers.openFirewall = true;
+
+    # Patch do SLSsteam injetado no ambiente da Steam
+    package = pkgs.steam.override {
+      extraEnv = {
+        LD_AUDIT = "${inputs.sls-steam.packages.${pkgs.stdenv.hostPlatform.system}.sls-steam}/library-inject.so:${inputs.sls-steam.packages.${pkgs.stdenv.hostPlatform.system}.sls-steam}/SLSsteam.so";
+      };
+     };
+     };
+
+  programs.xwayland.enable = true;
+
+services.gvfs.enable = true;
+services.udisks2.enable = true;   
+  
+  # ===========================================================================
+  # 13. VERSÃO DO NIXOS
   # ===========================================================================
   system.stateVersion = "26.05";
 }
