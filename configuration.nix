@@ -163,7 +163,8 @@
     fastfetchMinimal
     bitwarden-cli
     prismlauncher
-
+    lazygit
+    
     nautilus
     polkit_gnome
     
