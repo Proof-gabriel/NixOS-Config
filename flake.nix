@@ -8,7 +8,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     
     home-manager = { 
-      url = "github:nix-community/home-manager/release-26.05";
+    url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -28,9 +28,14 @@
       url = "github:AceSLS/SLSsteam";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-  };
+   # NAVEGADOR HELIUM :
+    helium = {
+      url = "gitlab:ntgn/helium-flake";
+    };
+    
+     };
 
-  outputs = { self, nixpkgs, home-manager, spotx-nix, noctalia, ... } @ inputs: 
+  outputs = { self, nixpkgs, home-manager, spotx-nix, noctalia, helium, ... } @ inputs: 
   let
     # =======================================================================
     # 2. VARIÁVEIS GLOBAIS DA MÁQUINA
@@ -65,7 +70,9 @@
             useGlobalPkgs = true;
             useUserPackages = true;
             backupFileExtension = "backup";
-            
+
+            extraSpecialArgs = { inherit inputs; };
+
             # Importa o arquivo home.nix injetando a variável do usuário
             users.${userName} = import ./home.nix;
           };

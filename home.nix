@@ -1,6 +1,13 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
+  # ===========================================================================
+  # 0. IMPORTS
+  # ===========================================================================
+  imports = [
+    inputs.helium.homeModules.helium
+  ];
+
   # ===========================================================================
   # 1. INFORMAÇÕES BÁSICAS
   # ===========================================================================
@@ -42,6 +49,20 @@
   # ===========================================================================
   programs = {
     
+    # --- HELIUM BROWSER ---
+    helium = {
+      enable = true;
+      defaultBrowser = true;
+      extraFlags = [
+        "--ozone-platform-hint=auto"
+        "--enable-features=WaylandWindowDecorations"
+        "--enable-wayland-ime"
+      ];
+      preferences = {
+        browser.show_home_button = false;
+      };
+    };
+
     fish = {
       enable = true;
       
@@ -122,7 +143,8 @@
         keep-open = "yes";
       };
     };
-  };
+    
+  }; # <--- CHAVE RESTAURADA AQUI PARA FECHAR O BLOCO "programs = {"
 
   # ===========================================================================
   # 4. ARQUIVOS DE CONFIGURAÇÃO (XDG / PLUGINS)

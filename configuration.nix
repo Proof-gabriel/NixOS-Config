@@ -16,6 +16,7 @@
   imports = [
     ./hardware-configuration.nix
     inputs.noctalia.nixosModules.default
+    inputs.helium.nixosModules.helium
   ];
 
   # ===========================================================================
@@ -30,11 +31,28 @@
   nixpkgs.config.allowUnfree = true;
 
   # ===========================================================================
-  # 3. BOOT E KERNEL
+  # 3. BOOT, KERNEL E TELA DE CARREGAMENTO (PLYMOUTH)
   # ===========================================================================
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.supportedFilesystems = [ "ntfs" "exfat" "vfat" ];
+
+  # Silenciar os logs do kernel
+  boot.consoleLogLevel = 0;
+  boot.initrd.verbose = false;
+  boot.kernelParams = [
+    "quiet"
+    "splash"
+    "boot.shell_on_fail"
+    "loglevel=3"
+    "rd.systemd.show_status=false"
+    "rd.udev.log_level=3"
+    "udev.log_priority=3"
+  ];
+
+  # Ativar a animação de boot (Plymouth com tema BGRT)
+  boot.plymouth.enable = true;
+  boot.plymouth.theme = "bgrt";
 
   # ===========================================================================
   # 4. REDE E HOSTNAME
@@ -100,7 +118,7 @@
   };
 
   # ===========================================================================
-  # 8. INTERFACE GRÁFICA (Niri + Noctalia Shell Stack)
+  # 8. INTERFACE GRÁFICA E TELA DE BLOQUEIO
   # ===========================================================================
   programs.niri.enable = true;
   services.displayManager.ly.enable = true;
@@ -111,6 +129,10 @@
     recommendedServices.enable = true;
     systemd.enable = true; 
   };
+
+  # Hyprlock e permissão PAM
+  programs.hyprlock.enable = true;
+  security.pam.services.hyprlock = {};
 
   programs.dconf.enable = true;
   xdg.portal = {
@@ -147,7 +169,7 @@
     brave
     ghostty
     spotify-spotx  
-
+    librewolf-bin
     xwayland-satellite
     
     git
@@ -164,7 +186,8 @@
     bitwarden-cli
     prismlauncher
     lazygit
-    
+
+    obsidian
     nautilus
     polkit_gnome
     
@@ -209,9 +232,9 @@
 
   programs.xwayland.enable = true;
 
-services.gvfs.enable = true;
-services.udisks2.enable = true;   
-  
+  services.gvfs.enable = true;
+  services.udisks2.enable = true;   
+
   # ===========================================================================
   # 13. VERSÃO DO NIXOS
   # ===========================================================================
